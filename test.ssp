@@ -1,8 +1,13 @@
-def aa() -> bool:
-    return true
+def aa():
+    pass
 
 def z(x: int) -> bool:
-    return x >= 100 && x < 200 && x
+    aa()
+    if x >= 100 && x < 200 && x:
+        return true
+    else:
+        aa()
+        return false
 
 # def d() -> long:
 #     return 3

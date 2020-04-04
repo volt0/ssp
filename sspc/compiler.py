@@ -26,6 +26,10 @@ def compile_function(function_ast, module, parent_context):
     if function_ast.body:
         for stmt in function_ast.body:
             stmt.compile(context)
+
+        last_block = context.builder.function.blocks[-1]
+        if not len(last_block.instructions):
+            context.builder.function.blocks.pop()
     else:
         context.builder.ret_void()
 
@@ -44,7 +48,6 @@ def compile_module(module_ast: ast.module):
         'short': datatypes.Integer(16, False),
         'int': datatypes.Integer(32, False),
         'long': datatypes.Integer(64, False),
-        # 'int': ir.IntType(32),
         'bool': sspc.datatypes.Boolean(),
     }
 

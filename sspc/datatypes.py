@@ -8,6 +8,8 @@ def coerce(target_type, value, context):
     value_type = value.type
 
     if isinstance(target_type, Boolean):
+        if isinstance(value_type, Boolean):
+            return value
         if isinstance(value_type, Integer):
             result = context.builder.icmp_unsigned('!=', value, value_type(0))
             result = context.builder.zext(result, target_type)
@@ -31,7 +33,6 @@ def coerce(target_type, value, context):
         elif isinstance(value_type, Boolean):
             return context.builder.zext(value, target_type)
 
-    # print(value, '\n:', type(value_type), 'as', type(target_type))
     raise TypeMismatch('Cannot assign %s to %s' % (value_type, target_type))
 
 

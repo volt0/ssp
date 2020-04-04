@@ -1,3 +1,4 @@
+import argparse
 import subprocess
 
 import llvmlite.binding as llvm
@@ -5,17 +6,21 @@ import llvmlite.binding as llvm
 from sspc.compiler import compile_module
 from sspc.parser.parser import Parser
 
+args_parser = argparse.ArgumentParser()
+args_parser.add_argument('--trace', action='store_true')
+
 
 def main():
+    args = args_parser.parse_args()
+
     llvm.initialize()
     llvm.initialize_native_target()
     llvm.initialize_native_asmprinter()
 
-    parser = Parser(debug=False)
+    parser = Parser(debug=args.trace)
     with open('test.ssp') as fp:
         module_ast = parser.parse(fp.read())
         module_ir = compile_module(module_ast)
-        print(module_ast)
 
     target = llvm.Target.from_default_triple()
     target_machine = target.create_target_machine()

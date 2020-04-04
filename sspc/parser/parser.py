@@ -10,6 +10,7 @@ keywords = {
     'var': 'VAR',
     'let': 'LET',
     'if': 'IF',
+    'else': 'ELSE',
     'for': 'FOR',
     'pass': 'PASS',
     'return': 'RETURN',
@@ -200,29 +201,34 @@ def p_compound_stmt_empty(p):
 def p_stmt_list(p):
     """
     stmt_list : stmt_list NEWLINE stmt
+              | stmt_list stmt_list
               | stmt
     """
     if len(p) == 2:
         p[0] = [p[1]]
+    elif len(p) == 3:
+        p[1].extend(p[2])
+        p[0] = p[1]
     else:
         p[1].append(p[3])
         p[0] = p[1]
 
 
-def p_stmt(p):
+def p_stmt_1(p):
     """
     stmt : expression
          | assignment
-         | let_stmt
+         | let
+         | if
          | return
     """
     p[0] = p[1]
 
 
-def p_let_stmt(p):
+def p_let(p):
     """
-    let_stmt : LET ID COLON type ASSIGN expression
-             | LET ID ASSIGN expression
+    let : LET ID COLON type ASSIGN expression
+        | LET ID ASSIGN expression
     """
     if len(p) == 7:
         p[0] = statement.LetStmt(name=p[2], value=p[6], dtype=p[4])
@@ -230,9 +236,18 @@ def p_let_stmt(p):
         p[0] = statement.LetStmt(name=p[2], value=p[4])
 
 
-def p_assignment(p):
-    """assignment : lvalue ASSIGN expression"""
-    p[0] = ast.assign(p[2], p[4])
+def p_if(p):
+    """
+    if : IF expression COLON compound_stmt
+    """
+    p[0] = statement.IfStmt(condition=p[2], then_body=p[4])
+
+
+def p_if_else(p):
+    """
+    if : IF expression COLON compound_stmt ELSE COLON compound_stmt
+    """
+    p[0] = statement.IfStmt(condition=p[2], then_body=p[4], else_body=p[7])
 
 
 def p_return(p):
@@ -241,6 +256,11 @@ def p_return(p):
            | RETURN
     """
     p[0] = statement.ReturnStmt(p[2] if len(p) == 3 else None)
+
+
+def p_assignment(p):
+    """assignment : lvalue ASSIGN expression"""
+    p[0] = ast.assign(p[2], p[4])
 
 
 unary_ops = {
@@ -434,8 +454,6 @@ class Lexer:
 
                 elif prev_token.type == 'NEWLINE':
                     is_indent_changed = False
-                    # line_start_lexpos = prev_token.lexpos + len(prev_token.value)
-                    # cur_indent = token.lexpos - line_start_lexpos
                     if cur_indent > prev_indent:
                         is_indent_changed = True
                         yield emit_token('INDENT', line_start_lexpos, token.lineno)
