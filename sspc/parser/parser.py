@@ -11,6 +11,7 @@ keywords = {
     'let': 'LET',
     'if': 'IF',
     'else': 'ELSE',
+    'while': 'WHILE',
     'for': 'FOR',
     'pass': 'PASS',
     'return': 'RETURN',
@@ -220,6 +221,7 @@ def p_stmt_1(p):
          | assignment
          | let
          | if
+         | while
          | return
     """
     p[0] = p[1]
@@ -248,6 +250,15 @@ def p_if_else(p):
     if : IF expression COLON compound_stmt ELSE COLON compound_stmt
     """
     p[0] = statement.IfStmt(condition=p[2], then_body=p[4], else_body=p[7])
+
+
+def p_while(p):
+    """
+    while : WHILE expression COLON compound_stmt
+    """
+    p[0] = statement.WhileStmt(condition=p[2], body=p[4])
+
+
 
 
 def p_return(p):

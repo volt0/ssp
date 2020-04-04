@@ -47,6 +47,31 @@ class IfStmt(Statement):
 
 
 @dataclass
+class WhileStmt(Statement):
+    condition: Any
+    body: Any
+
+    def compile(self, context):
+        print(self)
+
+        condition_block = context.builder.function.append_basic_block()
+        context.builder.branch(condition_block)
+        loop_block = context.builder.function.append_basic_block()
+        end_block = context.builder.function.append_basic_block()
+
+        with context.builder.goto_block(condition_block):
+            condition = compile_expression(self.condition, context, type_hint=Boolean())
+            context.builder.cbranch(condition, loop_block, end_block)
+
+        with context.builder.goto_block(loop_block):
+            for stmt in self.body:
+                stmt.compile(context)
+            context.builder.branch(condition_block)
+
+        context.builder.position_at_end(end_block)
+
+
+@dataclass
 class ReturnStmt(Statement):
     value: Optional[Any]
 
