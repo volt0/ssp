@@ -1,0 +1,47 @@
+def aa() -> bool:
+    return true
+
+def z(x: int) -> bool:
+    return x >= 100 && x < 200 && x
+
+# def d() -> long:
+#     return 3
+
+# def c(x: int, y: int) -> int:
+#     return x + y
+
+# def main() -> int:
+#     let a: int = 1
+#     let b: int = 2
+
+#     # f = def(x: int):
+#     #     pass
+
+#     _z(1)
+
+#     return a + b + c(a, b) + int(d())
+
+def m(a: int, b: int) -> int:
+    # return -(((a + b) * a) / b) % a
+    return a / -a
+
+def main() -> int:
+    let l1: long = 1
+    let i1: int = int(l1)
+    let s1: short = short(i1)
+    let b1: byte = byte(s1)
+
+    # let s2: ushort = ushort(b1)
+    # let i2: uint = uint(s2)
+    # let l2: ulong = ulong(i2)
+
+    let s3: short = b1
+    let i3: int = s3
+    # let l3: long = i3
+
+    let bb: bool = z(m(i1, i3))
+    let i4: int = bb
+
+
+    return 0
+    # return z(1)
